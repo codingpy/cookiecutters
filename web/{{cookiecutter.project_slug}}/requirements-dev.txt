@@ -1,0 +1,3 @@
+fastapi[all]
+sqlalchemy[asyncio]
+alembic
