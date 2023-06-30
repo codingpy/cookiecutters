@@ -1,15 +1,11 @@
 import re
 
 from sqlalchemy import MetaData
-from sqlalchemy.orm import DeclarativeBase, declared_attr
+from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
 
 class Base(DeclarativeBase):
-    # Generate __tablename__ automatically
-    @declared_attr.directive
-    @classmethod
-    def __tablename__(cls) -> str:
-        return to_snake(cls.__name__)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
     metadata = MetaData(
         naming_convention={
@@ -21,6 +17,12 @@ class Base(DeclarativeBase):
         }
     )
 
+    # Generate __tablename__ automatically
+    @declared_attr.directive
+    @classmethod
+    def __tablename__(cls) -> str:
+        return to_snake(cls.__name__)
+
 
 def to_snake(s):
-    return re.sub("(?<!^)(?=[A-Z])", "_", s).lower()
+    return re.sub("(?<!^)(?=[A-Z][a-z])|(?<![A-Z])(?=[A-Z])", "_", s).lower()
