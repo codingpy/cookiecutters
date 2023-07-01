@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Union
+from typing import Any, Generic, TypeVar, Union
 
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
@@ -27,18 +27,26 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return result.all()
 
-    async def create(self, db: AsyncSession, obj_in: CreateSchemaType) -> int:
+    async def create(
+        self, db: AsyncSession, obj_in: Union[CreateSchemaType, dict[str, Any]]
+    ) -> int:
+        if not isinstance(obj_in, dict):
+            obj_in = obj_in.dict()
+
         result = await db.scalars(
-            insert(self.model).values(obj_in.dict()).returning(self.model.id)
+            insert(self.model).values(obj_in).returning(self.model.id)
         )
 
         return result.one()
 
-    async def update(self, db: AsyncSession, id: int, obj_in: UpdateSchemaType) -> bool:
+    async def update(
+        self, db: AsyncSession, id: int, obj_in: Union[UpdateSchemaType, dict[str, Any]]
+    ) -> bool:
+        if not isinstance(obj_in, dict):
+            obj_in = obj_in.dict(exclude_unset=True)
+
         result = await db.execute(
-            update(self.model)
-            .values(obj_in.dict(exclude_unset=True))
-            .where(self.model.id == id)
+            update(self.model).values(obj_in).where(self.model.id == id)
         )
 
         return result.rowcount > 0

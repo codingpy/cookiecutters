@@ -1,3 +1,5 @@
 fastapi[all]
 sqlalchemy[asyncio]
 alembic
+asyncpg
+passlib[bcrypt]
