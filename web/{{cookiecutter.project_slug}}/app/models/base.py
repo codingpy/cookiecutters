@@ -25,4 +25,4 @@ class Base(DeclarativeBase):
 
 
 def to_snake(s):
-    return re.sub("(?<!^)(?=[A-Z][a-z])|(?<![A-Z])(?=[A-Z])", "_", s).lower()
+    return re.sub("(?<=[^_])((?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z]))", "_", s).lower()
