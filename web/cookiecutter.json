@@ -1,6 +1,6 @@
 {
     "project_name": "Base Project",
-    "project_slug": "{% cookiecutter.project_name | slugify %}",
+    "project_slug": "{{ cookiecutter.project_name | slugify }}",
     "secret_key": "changethis",
     "postgres_password": "changethis"
 }
