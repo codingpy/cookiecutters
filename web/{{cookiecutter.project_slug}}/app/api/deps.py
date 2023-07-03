@@ -28,14 +28,14 @@ async def get_current_user(
 ) -> models.User:
     try:
         token_data = schemas.TokenData(
-            **jwt.decode(token, settings.secret_key, algorithms=auth.ALGORITHM)
+            **jwt.decode(token, settings.secret_key, algorithms=[auth.ALGORITHM])
         )
     except (JWTError, ValidationError):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN, detail="Could not validate credentials"
         )
 
-    user = await crud.user.get(db, token_data.sub)
+    user = await crud.user.get(db, token_data.id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
 

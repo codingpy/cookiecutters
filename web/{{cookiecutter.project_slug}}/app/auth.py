@@ -12,7 +12,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def create_access_token(
-    subject: int, expire_delta: Union[timedelta, None] = None
+    subject: str, expire_delta: Union[timedelta, None] = None
 ) -> str:
     expire = datetime.utcnow() + (
         expire_delta or timedelta(minutes=settings.access_token_expire_minutes)
