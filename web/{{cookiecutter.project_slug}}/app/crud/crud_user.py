@@ -17,14 +17,14 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return result.first()
 
     async def create(self, db: AsyncSession, obj_in: UserCreate) -> int:
-        obj_in = obj_in.dict()
+        obj_in: dict = obj_in.dict()
 
         obj_in["hashed_password"] = get_password_hash(obj_in.pop("password"))
 
         return await super().create(db, obj_in)
 
     async def update(self, db: AsyncSession, id: int, obj_in: UserUpdate) -> bool:
-        obj_in = obj_in.dict(exclude_unset=True)
+        obj_in: dict = obj_in.dict(exclude_unset=True)
 
         if "password" in obj_in:
             obj_in["hashed_password"] = get_password_hash(obj_in.pop("password"))
