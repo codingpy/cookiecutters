@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Union
+from typing import Any, Union
 
 from jose import jwt
 from passlib.context import CryptContext
@@ -12,13 +12,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def create_access_token(
-    subject: str, expire_delta: Union[timedelta, None] = None
+    subject: Any, scopes: list[str], expire_delta: Union[timedelta, None] = None
 ) -> str:
     expire = datetime.utcnow() + (
         expire_delta or timedelta(minutes=settings.access_token_expire_minutes)
     )
     return jwt.encode(
-        {"sub": subject, "exp": expire}, settings.secret_key, algorithm=ALGORITHM
+        {"sub": str(subject), "exp": expire, "scope": " ".join(scopes)},
+        settings.secret_key,
+        algorithm=ALGORITHM,
     )
 
 
