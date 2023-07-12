@@ -29,27 +29,34 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def create(
         self, db: AsyncSession, obj_in: Union[CreateSchemaType, dict[str, Any]]
-    ) -> int:
-        if not isinstance(obj_in, dict):
-            obj_in = obj_in.dict()
+    ) -> ModelType:
+        if isinstance(obj_in, dict):
+            create_data = obj_in
+        else:
+            create_data = obj_in.model_dump()
 
         result = await db.scalars(
-            insert(self.model).values(obj_in).returning(self.model.id)
+            insert(self.model).values(create_data).returning(self.model)
         )
 
         return result.one()
 
     async def update(
         self, db: AsyncSession, id: int, obj_in: Union[UpdateSchemaType, dict[str, Any]]
-    ) -> bool:
-        if not isinstance(obj_in, dict):
-            obj_in = obj_in.dict(exclude_unset=True)
+    ) -> ModelType:
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.model_dump(exclude_unset=True)
 
-        result = await db.execute(
-            update(self.model).values(obj_in).where(self.model.id == id)
+        result = await db.scalars(
+            update(self.model)
+            .values(update_data)
+            .where(self.model.id == id)
+            .returning(self.model)
         )
 
-        return result.rowcount > 0
+        return result.one()
 
     async def delete(self, db: AsyncSession, id: int) -> bool:
         result = await db.execute(delete(self.model).where(self.model.id == id))

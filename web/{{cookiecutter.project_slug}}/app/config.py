@@ -28,6 +28,9 @@ class Settings(BaseSettings):
             path=f"/{values['postgres_db']}",
         )
 
+    email_enabled: bool = False
+    users_open_registration: bool = False
+
     class Config:
         env_file = ".env"
 

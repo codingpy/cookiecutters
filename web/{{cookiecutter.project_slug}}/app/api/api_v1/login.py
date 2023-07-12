@@ -21,7 +21,7 @@ async def login_access_token(
     user = await crud.user.authenticate(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, detail="Invalid email or password"
+            status.HTTP_400_BAD_REQUEST, detail="Incorrect email or password"
         )
     elif not user.is_active:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Inactive user")
