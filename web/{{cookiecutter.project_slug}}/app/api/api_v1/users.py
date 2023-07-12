@@ -91,8 +91,8 @@ async def read_user_me(
 @router.get("/{user_id}", response_model=schemas.User)
 async def read_user_by_id(
     db: Annotated[AsyncSession, Depends(deps.get_db)],
-    user_id: int,
     current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
+    user_id: int,
 ) -> models.User:
     """
     Get a specific user by id.
@@ -103,7 +103,7 @@ async def read_user_by_id(
     if not current_user.is_superuser:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
-            detail="The user doesn't have enough priviledges",
+            detail="The user doesn't have enough privileges",
         )
 
     return await crud.user.get(db, user_id)
