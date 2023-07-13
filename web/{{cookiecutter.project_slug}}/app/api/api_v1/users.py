@@ -14,6 +14,7 @@ router = APIRouter()
 @router.post(
     "/",
     response_model=schemas.User,
+    status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(deps.get_current_active_superuser)],
 )
 async def create_user(
@@ -36,7 +37,7 @@ async def create_user(
     return user
 
 
-@router.post("/open", response_model=schemas.User)
+@router.post("/open", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 async def create_user_open(
     db: Annotated[AsyncSession, Depends(deps.get_db)],
     email: Annotated[EmailStr, Body()],
