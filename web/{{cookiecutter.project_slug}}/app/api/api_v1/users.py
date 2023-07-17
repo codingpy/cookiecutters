@@ -1,6 +1,6 @@
 from typing import Annotated, Union
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -67,16 +67,23 @@ async def create_user_open(
     "/",
     response_model=list[schemas.User],
     dependencies=[Depends(deps.get_current_active_superuser)],
+    responses={204: {}},
 )
 async def read_users(
     db: Annotated[AsyncSession, Depends(deps.get_db)],
+    response: Response,
     skip_id: int = 0,
     limit: int = 100,
 ) -> list[models.User]:
     """
     Retrieve users.
     """
-    return await crud.user.get_list(db, skip_id=skip_id, limit=limit)
+    users = await crud.user.get_list(db, skip_id, limit)
+
+    if not users:
+        response.status_code = status.HTTP_204_NO_CONTENT
+
+    return users
 
 
 @router.get("/me", response_model=schemas.User)

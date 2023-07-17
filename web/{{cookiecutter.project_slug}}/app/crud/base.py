@@ -19,7 +19,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return await db.get(self.model, id)
 
     async def get_list(
-        self, db: AsyncSession, *, skip_id: int = 0, limit: int = 100
+        self, db: AsyncSession, skip_id: int = 0, limit: int = 100
     ) -> list[ModelType]:
         result = await db.scalars(
             select(self.model).where(self.model.id > skip_id).limit(limit)
