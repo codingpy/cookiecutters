@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(
 
 
 async def get_db() -> AsyncIterator[AsyncSession]:
-    async with async_session() as session:
+    async with async_session.begin() as session:
         yield session
 
 
