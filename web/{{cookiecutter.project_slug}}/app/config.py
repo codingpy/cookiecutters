@@ -1,7 +1,7 @@
 import secrets
-from typing import Any, Union
 
-from pydantic import BaseSettings, PostgresDsn, validator
+from pydantic import PostgresDsn, computed_field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -13,26 +13,22 @@ class Settings(BaseSettings):
     postgres_user: str
     postgres_password: str
     postgres_db: str
-    sqlalchemy_database_uri: Union[PostgresDsn, None] = None
 
-    @validator("sqlalchemy_database_uri", pre=True)
-    def assemble_db_connection(cls, v: Union[str, None], values: dict[str, Any]) -> str:
-        if isinstance(v, str):
-            return v
-
+    @computed_field  # type: ignore[misc]
+    @property
+    def sqlalchemy_database_uri(self) -> str:
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
-            user=values["postgres_user"],
-            password=values["postgres_password"],
-            host=values["postgres_server"],
-            path=f"/{values['postgres_db']}",
+            username=self.postgres_user,
+            password=self.postgres_password,
+            host=self.postgres_server,
+            path=f"/{self.postgres_db}",
         )
 
     email_enabled: bool = False
     users_open_registration: bool = False
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
 
 settings = Settings()

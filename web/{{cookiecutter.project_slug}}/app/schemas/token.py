@@ -1,4 +1,9 @@
-from pydantic import BaseModel, Field, validator
+from datetime import datetime, timedelta
+from typing import Annotated
+
+from pydantic import BaseModel, BeforeValidator, Field, PlainSerializer
+
+from app.config import settings
 
 
 class Token(BaseModel):
@@ -7,9 +12,13 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: int = Field(alias="sub")
-    scopes: set[str] = Field(alias="scope")
-
-    @validator("scopes", pre=True)
-    def split_scope_str(cls, v: str) -> list[str]:
-        return v.split()
+    id: Annotated[int, PlainSerializer(lambda x: str(x))] = Field(alias="sub")
+    scopes: Annotated[
+        set[str],
+        BeforeValidator(lambda x: x.split()),
+        PlainSerializer(lambda x: " ".join(x)),
+    ] = Field(alias="scope")
+    exp: datetime = Field(
+        default_factory=lambda: datetime.utcnow()
+        + timedelta(minutes=settings.access_token_expire_minutes)
+    )
