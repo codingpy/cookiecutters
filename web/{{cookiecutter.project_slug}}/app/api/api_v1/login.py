@@ -26,4 +26,8 @@ async def login_access_token(
     elif not user.is_active:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Inactive user")
 
-    return {"access_token": auth.create_access_token(user.id, form_data.scopes)}
+    return {
+        "access_token": auth.create_access_token(
+            schemas.TokenData(sub=user.id, scope=" ".join(form_data.scopes))
+        )
+    }

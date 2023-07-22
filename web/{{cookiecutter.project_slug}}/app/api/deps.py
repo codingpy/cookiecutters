@@ -1,13 +1,13 @@
 from collections.abc import AsyncIterator
 from typing import Annotated
 
+import jwt
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from jose import JWTError, jwt
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import auth, crud, models, schemas
+from app import auth, crud, models
 from app.config import settings
 from app.db import async_session
 
@@ -32,10 +32,8 @@ async def get_current_user(
         authenticate_value += f' scope="{security_scopes.scope_str}"'
 
     try:
-        token_data = schemas.TokenData(
-            **jwt.decode(token, settings.secret_key, algorithms=[auth.ALGORITHM])
-        )
-    except (JWTError, ValidationError):
+        token_data = auth.decode_access_token(token)
+    except (jwt.InvalidTokenError, ValidationError):
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
