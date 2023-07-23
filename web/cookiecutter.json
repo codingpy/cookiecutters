@@ -2,5 +2,6 @@
     "project_name": "Base Project",
     "project_slug": "{{ cookiecutter.project_name | slugify }}",
     "secret_key": "changethis",
+    "cors_origins": "[\"http://localhost\", \"http://localhost:8080\", \"https://localhost\", \"https://localhost:8080\"]",
     "postgres_password": "changethis"
 }

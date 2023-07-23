@@ -1,10 +1,13 @@
 import secrets
 
-from pydantic import PostgresDsn, computed_field
+from pydantic import AnyHttpUrl, PostgresDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    project_name: str
+    cors_origins: list[AnyHttpUrl] = []
+
     api_v1_str: str = "/api/v1"
     secret_key: str = secrets.token_urlsafe(32)
     access_token_expire_minutes: int = 8 * 24 * 60
