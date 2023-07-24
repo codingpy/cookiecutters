@@ -1,9 +1,7 @@
-from datetime import datetime, timedelta
-from typing import Annotated
+from datetime import datetime
+from typing import Annotated, Union
 
 from pydantic import BaseModel, BeforeValidator, Field, PlainSerializer
-
-from app.config import settings
 
 
 class Token(BaseModel):
@@ -18,7 +16,4 @@ class TokenData(BaseModel):
         BeforeValidator(lambda x: x.split()),
         PlainSerializer(lambda x: " ".join(x)),
     ] = Field(alias="scope")
-    exp: datetime = Field(
-        default_factory=lambda: datetime.utcnow()
-        + timedelta(minutes=settings.access_token_expire_minutes)
-    )
+    exp: Union[datetime, None] = None

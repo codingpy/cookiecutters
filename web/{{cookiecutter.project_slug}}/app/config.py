@@ -28,6 +28,7 @@ class Settings(BaseSettings):
             path=f"/{self.postgres_db}",
         )
 
+    email_reset_token_expire_hours: int = 48
     email_enabled: bool = False
     users_open_registration: bool = False
 

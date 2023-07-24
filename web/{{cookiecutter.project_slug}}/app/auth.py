@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from typing import Union
+
 import jwt
 from passlib.context import CryptContext
 
@@ -9,7 +12,16 @@ ALGORITHM = "HS256"
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_access_token(token_data: TokenData) -> str:
+def create_access_token(
+    token_data: TokenData, expires_delta: Union[timedelta, None] = None
+) -> str:
+    now = datetime.utcnow()
+
+    if expires_delta:
+        token_data.exp = now + expires_delta
+    elif not token_data.exp:
+        token_data.exp = now + timedelta(minutes=settings.access_token_expire_minutes)
+
     return jwt.encode(token_data.model_dump(), settings.secret_key, algorithm=ALGORITHM)
 
 
