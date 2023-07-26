@@ -114,7 +114,11 @@ async def read_user_by_id(
             detail="The user doesn't have enough privileges",
         )
 
-    return await crud.user.get(db, user_id)
+    user = await crud.user.get(db, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    return user
 
 
 @router.put("/me", response_model=schemas.User)

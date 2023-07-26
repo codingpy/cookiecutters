@@ -3,6 +3,7 @@ from typing import Union
 
 import jwt
 from passlib.context import CryptContext
+from pydantic import ValidationError
 
 from app.config import settings
 from app.schemas import TokenData
@@ -25,8 +26,13 @@ def create_access_token(
     return jwt.encode(token_data.model_dump(), settings.secret_key, algorithm=ALGORITHM)
 
 
-def decode_access_token(token: str) -> TokenData:
-    return TokenData(**jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM]))
+def decode_access_token(token: str) -> Union[TokenData, None]:
+    try:
+        return TokenData(
+            **jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
+        )
+    except (jwt.InvalidTokenError, ValidationError):
+        pass
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

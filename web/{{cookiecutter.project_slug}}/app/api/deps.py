@@ -1,10 +1,8 @@
 from collections.abc import AsyncIterator
 from typing import Annotated
 
-import jwt
 from fastapi import Depends, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
-from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import auth, crud, models
@@ -31,9 +29,8 @@ async def get_current_user(
     if security_scopes.scopes:
         authenticate_value += f' scope="{security_scopes.scope_str}"'
 
-    try:
-        token_data = auth.decode_access_token(token)
-    except (jwt.InvalidTokenError, ValidationError):
+    token_data = auth.decode_access_token(token)
+    if not token_data:
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",

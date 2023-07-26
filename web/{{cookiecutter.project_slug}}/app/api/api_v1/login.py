@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -36,7 +36,7 @@ async def login_for_access_token(
     }
 
 
-@router.post("/password-recovery/{email}", response_model=schemas.Msg)
+@router.post("/recover-password/{email}", response_model=schemas.Msg)
 async def recover_password(
     db: Annotated[AsyncSession, Depends(deps.get_db)], email: EmailStr
 ) -> Any:
@@ -59,6 +59,31 @@ async def recover_password(
     send_reset_password_email(user.email, token)
 
     return {"msg": "Password recovery email sent"}
+
+
+@router.post("/reset-password", response_model=schemas.Msg)
+async def reset_password(
+    db: Annotated[AsyncSession, Depends(deps.get_db)],
+    token: Annotated[str, Body()],
+    new_password: Annotated[str, Body()],
+) -> Any:
+    """
+    Reset password
+    """
+    token_data = auth.decode_access_token(token)
+    if not token_data:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Invalid token")
+
+    user = await crud.user.get(db, token_data.id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
+    if not user.is_active:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+
+    user_in = schemas.UserUpdate(password=new_password)
+    await crud.user.update(db, user.id, user_in)
+
+    return {"msg": "Password updated successfully"}
 
 
 def send_reset_password_email(to: str, token: str) -> None:
