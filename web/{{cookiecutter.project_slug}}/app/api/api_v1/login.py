@@ -50,7 +50,7 @@ async def recover_password(
             detail="The user with this username does not exist in the system",
         )
 
-    token_data = schemas.TokenData(sub=user.id, scope="me")
+    token_data = schemas.TokenData(sub=user.id)
     token = auth.create_access_token(
         token_data,
         expires_delta=timedelta(hours=settings.email_reset_token_expire_hours),

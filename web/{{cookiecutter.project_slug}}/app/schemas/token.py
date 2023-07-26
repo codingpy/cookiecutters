@@ -15,5 +15,5 @@ class TokenData(BaseModel):
         set[str],
         BeforeValidator(lambda x: x.split()),
         PlainSerializer(lambda x: " ".join(x)),
-    ] = Field(alias="scope")
+    ] = Field(alias="scope", default=set())
     exp: Union[datetime, None] = None
