@@ -78,7 +78,7 @@ async def read_users(
     """
     Retrieve users.
     """
-    users = await crud.user.get_list(db, skip_id, limit)
+    users = await crud.user.get_all(db, skip_id, limit)
 
     if not users:
         response.status_code = status.HTTP_204_NO_CONTENT

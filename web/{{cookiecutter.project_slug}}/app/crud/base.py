@@ -18,7 +18,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def get(self, db: AsyncSession, id: int) -> Union[ModelType, None]:
         return await db.get(self.model, id)
 
-    async def get_list(
+    async def get_all(
         self, db: AsyncSession, skip_id: int = 0, limit: int = 100
     ) -> list[ModelType]:
         result = await db.scalars(
