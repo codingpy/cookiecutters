@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app import auth, crud, schemas
 from app.api import deps
 from app.config import settings
+from app.tasks import send_reset_password_email
 
 router = APIRouter()
 
@@ -51,12 +52,12 @@ async def recover_password(
         )
 
     token_data = schemas.TokenData(sub=user.id)
-    token = auth.create_access_token(
+    reset_token = auth.create_access_token(
         token_data,
         expires_delta=timedelta(hours=settings.email_reset_token_expire_hours),
     )
 
-    send_reset_password_email(user.email, token)
+    send_reset_password_email.delay(email, username=email, token=reset_token)
 
     return {"msg": "Password recovery email sent"}
 
@@ -84,7 +85,3 @@ async def reset_password(
     await crud.user.update(db, user.id, user_in)
 
     return {"msg": "Password updated successfully"}
-
-
-def send_reset_password_email(to: str, token: str) -> None:
-    pass

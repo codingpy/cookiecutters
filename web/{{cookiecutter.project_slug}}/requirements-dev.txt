@@ -4,3 +4,5 @@ alembic
 asyncpg
 passlib[bcrypt]
 pyjwt
+celery[redis]
+emails

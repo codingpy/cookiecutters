@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app import crud, models, schemas
 from app.api import deps
 from app.config import settings
+from app.tasks import send_new_account_email
 
 router = APIRouter()
 
@@ -31,8 +32,10 @@ async def create_user(
 
     user = await crud.user.create(db, user_in)
 
-    if settings.email_enabled:
-        send_new_account_email(user.email)
+    if settings.emails_enabled:
+        send_new_account_email.delay(
+            user_in.email, username=user_in.email, password=user_in.password
+        )
 
     return user
 
@@ -164,7 +167,3 @@ async def update_user(
         )
 
     return await crud.user.update(db, user_id, user_in)
-
-
-def send_new_account_email(to: str) -> None:
-    pass
