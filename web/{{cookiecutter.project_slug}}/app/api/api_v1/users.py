@@ -1,4 +1,4 @@
-from typing import Annotated, Union
+from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from pydantic import EmailStr
@@ -45,7 +45,7 @@ async def create_user_open(
     db: Annotated[AsyncSession, Depends(deps.get_db)],
     email: Annotated[EmailStr, Body()],
     password: Annotated[str, Body()],
-    full_name: Annotated[Union[str, None], Body()] = None,
+    full_name: Annotated[str | None, Body()] = None,
 ) -> models.User:
     """
     Create new user without the need to be logged in.
@@ -128,9 +128,9 @@ async def read_user_by_id(
 async def update_user_me(
     db: Annotated[AsyncSession, Depends(deps.get_db)],
     current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
-    email: Annotated[Union[EmailStr, None], Body()] = None,
-    password: Annotated[Union[str, None], Body()] = None,
-    full_name: Annotated[Union[str, None], Body()] = None,
+    email: Annotated[EmailStr | None, Body()] = None,
+    password: Annotated[str | None, Body()] = None,
+    full_name: Annotated[str | None, Body()] = None,
 ) -> models.User:
     """
     Update own user.

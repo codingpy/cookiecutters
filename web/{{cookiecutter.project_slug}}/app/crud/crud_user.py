@@ -1,5 +1,3 @@
-from typing import Union
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +9,7 @@ from .base import CRUDBase
 
 
 class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
-    async def get_by_email(self, db: AsyncSession, email: str) -> Union[User, None]:
+    async def get_by_email(self, db: AsyncSession, email: str) -> User | None:
         result = await db.scalars(select(User).where(User.email == email))
 
         return result.first()
@@ -35,7 +33,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     async def authenticate(
         self, db: AsyncSession, email: str, password: str
-    ) -> Union[User, None]:
+    ) -> User | None:
         user = await self.get_by_email(db, email)
         if user and verify_password(password, user.hashed_password):
             return user

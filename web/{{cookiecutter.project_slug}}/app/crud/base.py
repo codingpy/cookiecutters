@@ -1,4 +1,4 @@
-from typing import Any, Generic, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
@@ -15,7 +15,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     def __init__(self, model: type[ModelType]):
         self.model = model
 
-    async def get(self, db: AsyncSession, id: int) -> Union[ModelType, None]:
+    async def get(self, db: AsyncSession, id: int) -> ModelType | None:
         return await db.get(self.model, id)
 
     async def get_all(
@@ -28,7 +28,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return result.all()
 
     async def create(
-        self, db: AsyncSession, obj_in: Union[CreateSchemaType, dict[str, Any]]
+        self, db: AsyncSession, obj_in: CreateSchemaType | dict[str, Any]
     ) -> ModelType:
         if isinstance(obj_in, dict):
             create_data = obj_in
@@ -42,7 +42,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return result.one()
 
     async def update(
-        self, db: AsyncSession, id: int, obj_in: Union[UpdateSchemaType, dict[str, Any]]
+        self, db: AsyncSession, id: int, obj_in: UpdateSchemaType | dict[str, Any]
     ) -> ModelType:
         if isinstance(obj_in, dict):
             update_data = obj_in

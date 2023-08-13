@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Union
+from typing import Annotated
 
 from pydantic import BaseModel, BeforeValidator, Field, PlainSerializer
 
@@ -16,4 +16,4 @@ class TokenData(BaseModel):
         BeforeValidator(lambda x: x.split()),
         PlainSerializer(lambda x: " ".join(x)),
     ] = Field(alias="scope", default=set())
-    exp: Union[datetime, None] = None
+    exp: datetime | None = None

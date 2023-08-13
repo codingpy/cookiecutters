@@ -1,6 +1,5 @@
 import secrets
 from functools import cached_property
-from typing import Union
 
 from pydantic import (
     AnyHttpUrl,
@@ -43,7 +42,7 @@ class Settings(BaseSettings):
     smtp_port: int = 0
     smtp_user: str = ""
     smtp_password: str = ""
-    emails_from_email: Union[EmailStr, None] = None
+    emails_from_email: EmailStr | None = None
     emails_from_name: str = ""
 
     @field_validator("emails_from_name")
