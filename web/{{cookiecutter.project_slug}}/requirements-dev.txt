@@ -1,8 +1,0 @@
-fastapi[all]
-sqlalchemy[asyncio]
-alembic
-asyncpg
-passlib[bcrypt]
-pyjwt
-celery[redis]
-emails
