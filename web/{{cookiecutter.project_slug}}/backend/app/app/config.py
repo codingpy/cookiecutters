@@ -29,12 +29,14 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[misc]
     @property
     def sqlalchemy_database_uri(self) -> str:
-        return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=self.postgres_user,
-            password=self.postgres_password,
-            host=self.postgres_server,
-            path=f"/{self.postgres_db}",
+        return str(
+            PostgresDsn.build(
+                scheme="postgresql+asyncpg",
+                username=self.postgres_user,
+                password=self.postgres_password,
+                host=self.postgres_server,
+                path=f"/{self.postgres_db}",
+            )
         )
 
     smtp_tls: bool = True
@@ -64,4 +66,4 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]

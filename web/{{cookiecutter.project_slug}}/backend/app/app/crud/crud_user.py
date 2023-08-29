@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,15 +16,25 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
         return result.first()
 
-    async def create(self, db: AsyncSession, obj_in: UserCreate) -> User:
-        create_data = obj_in.model_dump()
+    async def create(
+        self, db: AsyncSession, obj_in: UserCreate | dict[str, Any]
+    ) -> User:
+        if isinstance(obj_in, dict):
+            create_data = obj_in
+        else:
+            create_data = obj_in.model_dump()
 
         create_data["hashed_password"] = get_password_hash(create_data.pop("password"))
 
         return await super().create(db, create_data)
 
-    async def update(self, db: AsyncSession, id: int, obj_in: UserUpdate) -> User:
-        update_data = obj_in.model_dump(exclude_unset=True)
+    async def update(
+        self, db: AsyncSession, id: int, obj_in: UserUpdate | dict[str, Any]
+    ) -> User:
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.model_dump(exclude_unset=True)
 
         if "password" in update_data:
             update_data["hashed_password"] = get_password_hash(
@@ -37,6 +49,8 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         user = await self.get_by_email(db, email)
         if user and verify_password(password, user.hashed_password):
             return user
+
+        return None
 
     async def exists(self, db: AsyncSession, id: int) -> bool:
         result = await db.scalars(select(User).where(User.id == id).exists())

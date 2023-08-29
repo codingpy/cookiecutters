@@ -1,4 +1,4 @@
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Sequence, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
@@ -20,7 +20,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def get_all(
         self, db: AsyncSession, skip_id: int = 0, limit: int = 100
-    ) -> list[ModelType]:
+    ) -> Sequence[ModelType]:
         result = await db.scalars(
             select(self.model).where(self.model.id > skip_id).limit(limit)
         )

@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Sequence
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, status
 from pydantic import EmailStr
@@ -77,7 +77,7 @@ async def read_users(
     response: Response,
     skip_id: int = 0,
     limit: int = 100,
-) -> list[models.User]:
+) -> Sequence[models.User]:
     """
     Retrieve users.
     """

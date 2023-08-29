@@ -31,7 +31,7 @@ def decode_access_token(token: str) -> TokenData | None:
             **jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         )
     except (jwt.InvalidTokenError, ValidationError):
-        pass
+        return None
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
