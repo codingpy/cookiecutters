@@ -61,6 +61,8 @@ class Settings(BaseSettings):
         return bool(self.smtp_host and self.smtp_port and self.emails_from_email)
 
     email_reset_token_expire_hours: int = 48
+    first_superuser: EmailStr
+    first_superuser_password: str
     users_open_registration: bool = False
 
     model_config = SettingsConfigDict(env_file=".env")
