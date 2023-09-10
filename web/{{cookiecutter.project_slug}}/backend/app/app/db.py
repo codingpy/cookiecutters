@@ -13,7 +13,7 @@ async def init_db(db: AsyncSession) -> None:
     # the tables un-commenting the next line
     # Base.metadata.create_all(bind=engine)
 
-    if await crud.user.exists_email(db, settings.first_superuser):
+    if await crud.user.get_by_email(db, settings.first_superuser):
         return
 
     user_in = schemas.UserCreate(

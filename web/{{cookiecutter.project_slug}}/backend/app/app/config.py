@@ -6,7 +6,6 @@ from pydantic import (
     EmailStr,
     FieldValidationInfo,
     PostgresDsn,
-    computed_field,
     field_validator,
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,7 +25,6 @@ class Settings(BaseSettings):
     postgres_password: str
     postgres_db: str
 
-    @computed_field  # type: ignore[misc]
     @property
     def sqlalchemy_database_uri(self) -> str:
         return str(
@@ -55,7 +53,6 @@ class Settings(BaseSettings):
 
         return v
 
-    @computed_field  # type: ignore[misc]
     @cached_property
     def emails_enabled(self) -> bool:
         return bool(self.smtp_host and self.smtp_port and self.emails_from_email)

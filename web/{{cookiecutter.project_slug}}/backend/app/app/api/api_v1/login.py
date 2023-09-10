@@ -32,7 +32,7 @@ async def login_for_access_token(
 
     return {
         "access_token": auth.create_access_token(
-            schemas.TokenData(sub=user.id, scope=" ".join(form_data.scopes))
+            schemas.TokenData(user_id=user.id, scopes=set(form_data.scopes))
         )
     }
 
@@ -51,7 +51,7 @@ async def recover_password(
             detail="The user with this username does not exist in the system",
         )
 
-    token_data = schemas.TokenData(sub=user.id)
+    token_data = schemas.TokenData(user_id=user.id)
     reset_token = auth.create_access_token(
         token_data,
         expires_delta=timedelta(hours=settings.email_reset_token_expire_hours),
@@ -75,7 +75,7 @@ async def reset_password(
     if not token_data:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="Invalid token")
 
-    user = await crud.user.get(db, token_data.id)
+    user = await crud.user.get(db, token_data.user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     if not user.is_active:

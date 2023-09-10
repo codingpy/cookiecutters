@@ -24,7 +24,7 @@ async def create_user(
     """
     Create new user.
     """
-    if await crud.user.exists_email(db, user_in.email):
+    if await crud.user.get_by_email(db, user_in.email):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             detail="The user with this username already exists in the system",
@@ -56,7 +56,7 @@ async def create_user_open(
             detail="Open user registration is forbidden on this server",
         )
 
-    if await crud.user.exists_email(db, email):
+    if await crud.user.get_by_email(db, email):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             detail="The user with this username already exists in the system",
@@ -160,7 +160,7 @@ async def update_user(
     """
     Update a user.
     """
-    if not await crud.user.exists(db, user_id):
+    if not await crud.user.get(db, user_id):
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
             detail="The user with this username does not exist in the system",

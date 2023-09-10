@@ -52,15 +52,5 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
         return None
 
-    async def exists(self, db: AsyncSession, id: int) -> bool:
-        result = await db.scalars(select(User).where(User.id == id).exists())
-
-        return result.one()
-
-    async def exists_email(self, db: AsyncSession, email: str) -> bool:
-        result = await db.scalars(select(User).where(User.email == email).exists())
-
-        return result.one()
-
 
 user = CRUDUser(User)

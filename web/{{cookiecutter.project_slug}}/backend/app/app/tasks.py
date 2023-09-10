@@ -1,14 +1,13 @@
+from celery import shared_task
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from app import utils
 from app.config import settings
 
-from .celery import app
-
 env = Environment(autoescape=select_autoescape(), loader=PackageLoader("app"))
 
 
-@app.task
+@shared_task
 def send_new_account_email(to: str, username: str, password: str) -> None:
     template = env.get_template("new_account.html")
 
@@ -24,7 +23,7 @@ def send_new_account_email(to: str, username: str, password: str) -> None:
     )
 
 
-@app.task
+@shared_task
 def send_reset_password_email(to: str, username: str, token: str) -> None:
     template = env.get_template("reset_password.html")
 

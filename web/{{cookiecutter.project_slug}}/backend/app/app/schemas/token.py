@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Any
 
-from pydantic import BaseModel, BeforeValidator, Field, PlainSerializer
+from pydantic import BaseModel, model_serializer
 
 
 class Token(BaseModel):
@@ -10,10 +10,14 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    id: Annotated[int, PlainSerializer(lambda x: str(x))] = Field(alias="sub")
-    scopes: Annotated[
-        set[str],
-        BeforeValidator(lambda x: x.split()),
-        PlainSerializer(lambda x: " ".join(x)),
-    ] = Field(alias="scope", default=set())
-    exp: datetime | None = None
+    user_id: int
+    expires: datetime | None = None
+    scopes: set[str] = set()
+
+    @model_serializer
+    def ser_model(self) -> dict[str, Any]:
+        return {
+            "sub": str(self.user_id),
+            "exp": self.expires,
+            "scope": " ".join(self.scopes),
+        }

@@ -18,9 +18,11 @@ def create_access_token(
     now = datetime.utcnow()
 
     if expires_delta:
-        token_data.exp = now + expires_delta
-    elif not token_data.exp:
-        token_data.exp = now + timedelta(minutes=settings.access_token_expire_minutes)
+        token_data.expires = now + expires_delta
+    elif not token_data.expires:
+        token_data.expires = now + timedelta(
+            minutes=settings.access_token_expire_minutes
+        )
 
     return jwt.encode(token_data.model_dump(), settings.secret_key, algorithm=ALGORITHM)
 

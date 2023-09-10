@@ -37,7 +37,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": authenticate_value},
         )
 
-    user = await crud.user.get(db, token_data.id)
+    user = await crud.user.get(db, token_data.user_id)
     if not user:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND,
