@@ -20,6 +20,16 @@ class Settings(BaseSettings):
     secret_key: str = secrets.token_urlsafe(32)
     access_token_expire_minutes: int = 8 * 24 * 60
 
+    sentry_dsn: AnyHttpUrl | None = None
+
+    @field_validator("sentry_dsn", mode="before")
+    @classmethod
+    def sentry_dsn_can_be_blank(cls, v: str) -> str | None:
+        if not v:
+            return None
+
+        return v
+
     postgres_server: str
     postgres_user: str
     postgres_password: str
